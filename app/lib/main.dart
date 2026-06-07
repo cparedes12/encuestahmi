@@ -10,6 +10,7 @@ import 'theme.dart';
 import 'models.dart';
 import 'config.dart';
 import 'repository.dart';
+import 'update_service.dart';
 import 'widgets.dart';
 
 const _uuid = Uuid();
@@ -74,6 +75,17 @@ class _SurveyFlowState extends State<SurveyFlow> {
     final d = await _repo.departamentoActual();
     if (mounted) setState(() => depto = d);
     await _cargarPreguntas();
+    _chequeoActualizacionSilencioso();
+  }
+
+  /// Al iniciar: si hay versión nueva, descarga e instala (silencioso con Knox).
+  Future<void> _chequeoActualizacionSilencioso() async {
+    try {
+      final info = await UpdateService.instance.buscarActualizacion();
+      if (info == null) return;
+      final path = await UpdateService.instance.descargar(info);
+      await UpdateService.instance.instalar(path);
+    } catch (_) {/* sin red / error → se reintenta en el próximo arranque */}
   }
 
   Future<void> _cargarPreguntas() async {
@@ -120,15 +132,19 @@ class _SurveyFlowState extends State<SurveyFlow> {
       builder: (_) => const _PinDialog(),
     );
     if (ok != true || !mounted) return;
-    final nuevo = await showDialog<Departamento>(
+    final res = await showDialog<Object>(
       context: context,
       builder: (_) => _AdminPanel(actual: depto),
     );
-    if (nuevo != null && nuevo != depto && mounted) {
-      await _repo.fijarDepartamento(nuevo);
+    if (!mounted) return;
+    if (res == 'update') {
+      await showDialog(
+          context: context, builder: (_) => const _UpdateDialog());
+    } else if (res is Departamento && res != depto) {
+      await _repo.fijarDepartamento(res);
       setState(() {
-        depto = nuevo;
-        preguntas = seedPreguntas(nuevo);
+        depto = res;
+        preguntas = seedPreguntas(res);
         _sesion = null;
         step = 0;
       });
@@ -833,12 +849,103 @@ class _AdminPanel extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => Navigator.pop(context, 'update'),
+              icon: const Icon(Icons.system_update_alt, size: 18),
+              label: const Text('Buscar actualizaciones'),
+            ),
+          ),
         ],
       ),
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cerrar')),
+      ],
+    );
+  }
+}
+
+// ============================ ACTUALIZACIÓN (OTA) ============================
+class _UpdateDialog extends StatefulWidget {
+  const _UpdateDialog();
+  @override
+  State<_UpdateDialog> createState() => _UpdateDialogState();
+}
+
+class _UpdateDialogState extends State<_UpdateDialog> {
+  String _estado = 'Buscando actualización…';
+  double? _progreso;
+  bool _terminado = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _run();
+  }
+
+  Future<void> _run() async {
+    try {
+      final info = await UpdateService.instance.buscarActualizacion();
+      if (info == null) {
+        _set('Ya tienes la última versión. ✅', terminado: true);
+        return;
+      }
+      _set('Descargando versión ${info.version}…', progreso: 0);
+      final path = await UpdateService.instance.descargar(
+        info,
+        onProgress: (r, t) {
+          if (t > 0) _set('Descargando versión ${info.version}…', progreso: r / t);
+        },
+      );
+      _set('Instalando…');
+      final ok = await UpdateService.instance.instalar(path);
+      _set(ok ? 'Instalación iniciada. ✅' : 'No se pudo instalar.',
+          terminado: true);
+    } catch (e) {
+      _set('Error al actualizar. Revisa la conexión.', terminado: true);
+    }
+  }
+
+  void _set(String estado, {double? progreso, bool terminado = false}) {
+    if (!mounted) return;
+    setState(() {
+      _estado = estado;
+      _progreso = progreso;
+      _terminado = terminado;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Actualización', style: display(18)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(_estado,
+              style: body(14, weight: FontWeight.w600, color: Brand.inkSoft)),
+          if (_progreso != null) ...[
+            const SizedBox(height: 14),
+            LinearProgressIndicator(value: _progreso),
+            const SizedBox(height: 6),
+            Text('${(_progreso! * 100).round()}%',
+                style: body(11, weight: FontWeight.w700, color: Brand.inkMute)),
+          ] else if (!_terminado) ...[
+            const SizedBox(height: 16),
+            const Center(child: CircularProgressIndicator()),
+          ],
+        ],
+      ),
+      actions: [
+        if (_terminado)
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cerrar')),
       ],
     );
   }
