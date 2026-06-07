@@ -53,16 +53,29 @@ jobs:
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
             --dart-define=ADMIN_PIN=${{ secrets.ADMIN_PIN }}
 
-      - name: Renombrar APK
+      - name: Subir APK a Supabase Storage (bucket privado) y registrar versión
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
-          mkdir -p dist
-          cp build/app/outputs/flutter-apk/app-release.apk \
-             "dist/encuesta-salida-${{ github.ref_name }}.apk"
-
-      - name: Publicar Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: app/dist/encuesta-salida-${{ github.ref_name }}.apk
-          generate_release_notes: true
-          name: Encuesta de Salida ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
+          set -e
+          VER="${GITHUB_REF_NAME#v}"                       # v1.0.1 -> 1.0.1
+          FILE="encuesta-salida-${VER}.apk"
+          APK="build/app/outputs/flutter-apk/app-release.apk"
+          echo "Subiendo $FILE a bucket app-releases..."
+          curl -sS -f -X POST \
+            "${SUPABASE_URL}/storage/v1/object/app-releases/${FILE}" \
+            -H "Authorization: Bearer ${SERVICE_KEY}" \
+            -H "apikey: ${SERVICE_KEY}" \
+            -H "x-upsert: true" \
+            -H "Content-Type: application/vnd.android.package-archive" \
+            --data-binary "@${APK}"
+          echo "Registrando versión ${VER} en app_release..."
+          curl -sS -f -X POST \
+            "${SUPABASE_URL}/rest/v1/app_release" \
+            -H "Authorization: Bearer ${SERVICE_KEY}" \
+            -H "apikey: ${SERVICE_KEY}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=minimal" \
+            -d "{\"version\":\"${VER}\",\"storage_path\":\"${FILE}\",\"notas\":\"Release ${GITHUB_REF_NAME}\",\"activo\":true}"
+          echo "✅ Publicado ${FILE}"
