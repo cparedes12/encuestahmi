@@ -113,29 +113,43 @@ class EncuestaRepository {
   }
 
   Future<void> _subir(SupabaseClient client, EncuestaSesion s) async {
-    // upsert → idempotente: reintentos no duplican (PK = uuid del cliente).
-    await client.from('encuestas').upsert({
-      'id': s.id,
-      'departamento': s.departamento.key,
-      'dispositivo_id': Config.dispositivoIdOrNull,
-      'iniciada_en': s.iniciadaEn.toUtc().toIso8601String(),
-      'completada_en': s.completadaEn?.toUtc().toIso8601String(),
-      'completada': s.completadaEn != null,
-      'app_version': Config.appVersion,
-    }, onConflict: 'id');
+    // .insert (sin .select). Idempotencia ante reintentos offline: un 23505
+    // (clave duplicada, PK = uuid del cliente) significa "ya estaba subido" → éxito.
+    await _insertarIgnorandoDuplicado(() => client.from('encuestas').insert({
+          'id': s.id,
+          'departamento': s.departamento.key,
+          'dispositivo_id': Config.dispositivoIdOrNull,
+          'iniciada_en': s.iniciadaEn.toUtc().toIso8601String(),
+          'completada_en': s.completadaEn?.toUtc().toIso8601String(),
+          'completada': s.completadaEn != null,
+          'app_version': Config.appVersion,
+        }));
 
     if (s.respuestas.isNotEmpty) {
-      await client.from('respuestas').upsert([
-        for (final r in s.respuestas)
-          {
-            'id': r.id,
-            'encuesta_id': s.id,
-            'pregunta_id': r.preguntaId,
-            'departamento': s.departamento.key,
-            'valor': r.valor.key,
-            'respondida_en': r.respondidaEn.toUtc().toIso8601String(),
-          }
-      ], onConflict: 'id');
+      // Lote completo: un INSERT multi-fila es atómico (todas o ninguna), así
+      // que un 23505 del lote = la encuesta ya se había subido íntegra.
+      await _insertarIgnorandoDuplicado(() => client.from('respuestas').insert([
+            for (final r in s.respuestas)
+              {
+                'id': r.id,
+                'encuesta_id': s.id,
+                'pregunta_id': r.preguntaId,
+                'departamento': s.departamento.key,
+                'valor': r.valor.key,
+                'respondida_en': r.respondidaEn.toUtc().toIso8601String(),
+              }
+          ]));
+    }
+  }
+
+  /// Ejecuta un INSERT y trata la violación de clave única (23505) como éxito.
+  /// Esto preserva la idempotencia cuando un reintento reenvía datos ya subidos.
+  Future<void> _insertarIgnorandoDuplicado(Future<void> Function() insert) async {
+    try {
+      await insert();
+    } on PostgrestException catch (e) {
+      if (e.code == '23505') return; // duplicado por reintento → ya estaba subido
+      rethrow;
     }
   }
 
