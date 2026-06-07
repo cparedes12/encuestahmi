@@ -1,0 +1,36 @@
+# ===== Flutter / Dart =====
+**/.dart_tool/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
+*.lock.bak
+
+# ===== Android =====
+**/android/.gradle/
+**/android/captures/
+**/android/local.properties
+**/android/key.properties
+**/*.keystore
+**/*.jks
+**/android/app/upload-keystore.jks
+
+# ===== IDE =====
+.idea/
+.vscode/
+*.iml
+*.log
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Secretos / config local =====
+.env
+*.env
+**/secrets.dart
+
+# ===== APKs locales (se publican vía Releases, no en el repo) =====
+*.apk
