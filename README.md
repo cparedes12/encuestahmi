@@ -37,8 +37,8 @@ encuesta_salida/
 - [x] **F0** Esquema Supabase + preguntas seed
 - [x] **F2** App Flutter: welcome → preguntas → gracias → auto-reset (fiel al demo)
 - [x] **F3** Capa offline (SQLite + sync) + config por dispositivo (`--dart-define`)
-- [ ] **F1** Instancia Supabase (Docker en VM Proxmox) + `schema.sql` aplicado + ruta en Cloudflare Tunnel
-- [ ] **F4** Dashboard HTML conectado a datos reales + login Supabase Auth
+- [x] **F1** Instancia Supabase (Docker en VM Proxmox) + `schema.sql` aplicado + ruta en Cloudflare Tunnel
+- [x] **F4** Dashboard HTML conectado a datos reales + login Supabase Auth + administración (ver `dashboard/`)
 - [ ] **F5** APK release + modo kiosko Samsung Knox + instalación en tablet
 
 ## Cómo correr la app (con tu Supabase self-hosted)

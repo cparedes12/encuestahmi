@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encuestas de Salida · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;family=Quicksand:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body><div style="background: rgb(255, 243, 205); color: rgb(138, 101, 22); text-align: center; padding: 8px; font-family: Nunito, sans-serif; font-weight: 700; font-size: 13px;">VISTA PREVIA · datos de ejemplo (no conectado a Supabase)</div>
+
+<!-- ====================== LOGIN ====================== -->
+
+
+<!-- ====================== APP ====================== -->
+<div id="app" class="">
+  <header class="topbar">
+    <div class="logo">ES</div>
+    <div class="ttl">Encuestas de Salida<small>Dirección · Trabajo Social</small></div>
+    <div class="tabs" id="tabs">
+      <button class="active" data-tab="dashboard">Dashboard</button>
+      <button data-tab="admin">Administración</button>
+    </div>
+    <div class="spacer"></div>
+    <span class="user-chip" id="userChip">direccion@patronato.org</span>
+    <button class="btn btn-ghost btn-sm" id="logoutBtn">Salir</button>
+  </header>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="view active page" id="view-dashboard">
+    <div class="dash-grid">
+      <div class="dash-filters">
+        <div class="filter-group">
+          <span class="filter-label">Periodo</span>
+          <button class="filter-pill" data-range="hoy">Hoy</button>
+          <button class="filter-pill" data-range="semana">Semana</button>
+          <button class="filter-pill active" data-range="30">Últimos 30 días</button>
+          <button class="filter-pill" data-range="anterior">Mes anterior</button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Depto.</span>
+          <button class="filter-pill active" data-depto="">Ambos</button>
+          <button class="filter-pill" data-depto="pediatria">👶 Pediatría</button>
+          <button class="filter-pill" data-depto="ginecologia">🤱 Ginecología</button>
+        </div>
+        <div class="live-dot" id="liveDot">
+          <span class="live-dot-orb"></span>
+          <span id="liveTxt">En vivo · última respuesta hace 12 min</span>
+        </div>
+      </div>
+      <div id="dash">
+    <div class="kpi-row">
+    <div class="kpi total"><div class="kpi-accent"></div>
+      <div class="kpi-label">Total respuestas</div>
+      <div class="kpi-value">250</div>
+      <div class="kpi-sub"><span class="up">↑ 14%</span> vs. periodo anterior</div>
+      <svg class="kpi-spark" viewBox="0 0 70 28" preserveAspectRatio="none">
+    <path d="M0,20 L10,18 L20,19 L30,14 L40,16 L50,11 L60,13 L70,7" fill="none" stroke="#3a3a4a" stroke-width="2" stroke-linecap="round"></path></svg>
+    </div>
+    <div class="kpi good"><div class="kpi-accent"></div>
+      <div class="kpi-label">Satisfacción general</div>
+      <div class="kpi-value">78<small>%</small></div>
+      <div class="kpi-sub"><span class="up">↑ 3 pts</span> vs. periodo anterior</div>
+      <svg class="kpi-spark" viewBox="0 0 70 28" preserveAspectRatio="none">
+    <path d="M0,20 L10,18 L20,19 L30,14 L40,16 L50,11 L60,13 L70,7" fill="none" stroke="#2f8f5f" stroke-width="2" stroke-linecap="round"></path></svg>
+    </div>
+    <div class="kpi ped"><div class="kpi-accent"></div>
+      <div class="kpi-label">Pediatría</div>
+      <div class="kpi-value">75<small>%</small></div>
+      <div class="kpi-sub">142 respuestas</div>
+      <svg class="kpi-spark" viewBox="0 0 70 28" preserveAspectRatio="none">
+    <path d="M0,20 L10,18 L20,19 L30,14 L40,16 L50,11 L60,13 L70,7" fill="none" stroke="#3bb4c8" stroke-width="2" stroke-linecap="round"></path></svg>
+    </div>
+    <div class="kpi gin"><div class="kpi-accent"></div>
+      <div class="kpi-label">Ginecología</div>
+      <div class="kpi-value">81<small>%</small></div>
+      <div class="kpi-sub">108 respuestas</div>
+      <svg class="kpi-spark" viewBox="0 0 70 28" preserveAspectRatio="none">
+    <path d="M0,20 L10,18 L20,19 L30,14 L40,16 L50,11 L60,13 L70,7" fill="none" stroke="#d97a96" stroke-width="2" stroke-linecap="round"></path></svg>
+    </div>
+  </div>
+    
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-title"><span class="badge-pro">📈 Pro</span> Analíticos profesionales</div>
+    <div class="section-divider-line"></div>
+  </div>
+  <div class="exec-row">
+    <div class="nps-card">
+      <div class="nps-gauge">
+        <svg viewBox="0 0 140 90">
+          <defs><linearGradient id="nps-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#c44a3f"></stop><stop offset="50%" stop-color="#d8a23a"></stop><stop offset="100%" stop-color="#2f8f5f"></stop>
+          </linearGradient></defs>
+          <path class="nps-arc-bg" d="M 15 80 A 55 55 0 0 1 125 80"></path>
+          <path class="nps-arc-fg" d="M 15 80 A 55 55 0 0 1 125 80" style="animation:none;stroke-dasharray:143.5 175;stroke-dashoffset:0;transition:stroke-dasharray 1.2s ease"></path>
+        </svg>
+        <div class="nps-value">+64<small>NPS</small></div>
+      </div>
+      <div class="nps-info">
+        <div class="label">Net Promoter Score</div>
+        <h4>Excelente desempeño</h4>
+        <div class="desc">82% promotores menos 18% detractores. En salud, un NPS &gt; +50 se considera <strong>excelente</strong>.</div>
+        <span class="tag">↑ +6 vs. periodo anterior</span>
+      </div>
+    </div>
+    <div class="exec-card good">
+      <div><div class="ec-icon">✓</div><div class="ec-label">Tasa de finalización</div></div>
+      <div><div class="ec-value">88<small>%</small></div>
+        <div class="ec-sub"><span class="up">↑ 2 pts</span> · 12% no termina</div></div>
+    </div>
+    <div class="exec-card">
+      <div><div class="ec-icon">⏱</div><div class="ec-label">Tiempo promedio</div></div>
+      <div><div class="ec-value">42<small>s</small></div>
+        <div class="ec-sub">Objetivo: <strong>≤60s</strong> · Cumplido ✓</div></div>
+    </div>
+    <div class="exec-card rose">
+      <div><div class="ec-icon">📈</div><div class="ec-label">Cambio de satisfacción</div></div>
+      <div><div class="ec-value">+3<small>pts</small></div>
+        <div class="ec-sub"><span class="up">al alza</span> vs. periodo anterior</div></div>
+    </div>
+  </div>
+    <div class="panel"><div class="panel-head"><div>
+      <h3>📅 Patrón de respuestas por día y hora</h3>
+      <p>Distribución acumulada — útil para planear staffing de Trabajo Social</p>
+    </div></div>
+    <div class="heatmap-grid"><div></div><div class="hm-col-label">Lun</div><div class="hm-col-label">Mar</div><div class="hm-col-label">Mié</div><div class="hm-col-label">Jue</div><div class="hm-col-label">Vie</div><div class="hm-col-label">Sáb</div><div class="hm-col-label">Dom</div><div class="hm-row-label">8 a</div><div class="hm-cell peak" style="background:rgba(220,128,155,1.00);color:#fff">10</div><div class="hm-cell " style="background:rgba(220,128,155,0.72);color:#fff">7</div><div class="hm-cell " style="background:rgba(220,128,155,0.63);color:#fff">6</div><div class="hm-cell " style="background:rgba(220,128,155,0.72);color:#fff">7</div><div class="hm-cell " style="background:rgba(220,128,155,0.54);color:#fff">5</div><div class="hm-cell " style="background:rgba(220,128,155,0.36);color:#5a4a52">3</div><div class="hm-cell " style="background:rgba(220,128,155,0.72);color:#fff">7</div><div class="hm-row-label">10 a</div><div class="hm-cell " style="background:rgba(220,128,155,0.91);color:#fff">9</div><div class="hm-cell " style="background:rgba(220,128,155,0.91);color:#fff">9</div><div class="hm-cell " style="background:rgba(220,128,155,0.36);color:#5a4a52">3</div><div class="hm-cell " style="background:rgba(220,128,155,0.36);color:#5a4a52">3</div><div class="hm-cell " style="background:rgba(220,128,155,0.36);color:#5a4a52">3</div><div class="hm-cell " style="background:rgba(220,128,155,0.91);color:#fff">9</div><div class="hm-cell " style="background:rgba(220,128,155,0.26);color:#5a4a52">2</div><div class="hm-row-label">12 p</div><div class="hm-cell " style="background:rgba(220,128,155,0.17);color:#5a4a52">1</div><div class="hm-cell " style="background:rgba(220,128,155,1.00);color:#fff">10</div><div class="hm-cell " style="background:rgba(220,128,155,0.45);color:#5a4a52">4</div><div class="hm-cell " style="background:rgba(220,128,155,0.82);color:#fff">8</div><div class="hm-cell " style="background:rgba(220,128,155,0.91);color:#fff">9</div><div class="hm-cell " style="background:rgba(220,128,155,0.26);color:#5a4a52">2</div><div class="hm-cell " style="background:rgba(220,128,155,0.63);color:#fff">6</div><div class="hm-row-label">2 p</div><div class="hm-cell " style="background:rgba(220,128,155,0.82);color:#fff">8</div><div class="hm-cell " style="background:rgba(220,128,155,0.26);color:#5a4a52">2</div><div class="hm-cell " style="background:rgba(220,128,155,0.26);color:#5a4a52">2</div><div class="hm-cell " style="background:rgba(220,128,155,0.54);color:#fff">5</div><div class="hm-cell " style="background:rgba(220,128,155,0.36);color:#5a4a52">3</div><div class="hm-cell " style="background:rgba(220,128,155,0.91);color:#fff">9</div><div class="hm-cell " style="background:rgba(220,128,155,0.45);color:#5a4a52">4</div><div class="hm-row-label">4 p</div><div class="hm-cell " style="background:rgba(220,128,155,0.91);color:#fff">9</div><div class="hm-cell " style="background:rgba(220,128,155,0.36);color:#5a4a52">3</div><div class="hm-cell " style="background:rgba(220,128,155,0.08);color:#5a4a52"></div><div class="hm-cell " style="background:rgba(220,128,155,0.17);color:#5a4a52">1</div><div class="hm-cell " style="background:rgba(220,128,155,0.08);color:#5a4a52"></div><div class="hm-cell " style="background:rgba(220,128,155,0.91);color:#fff">9</div><div class="hm-cell " style="background:rgba(220,128,155,0.54);color:#fff">5</div><div class="hm-row-label">6 p</div><div class="hm-cell " style="background:rgba(220,128,155,1.00);color:#fff">10</div><div class="hm-cell " style="background:rgba(220,128,155,0.26);color:#5a4a52">2</div><div class="hm-cell " style="background:rgba(220,128,155,1.00);color:#fff">10</div><div class="hm-cell " style="background:rgba(220,128,155,0.45);color:#5a4a52">4</div><div class="hm-cell " style="background:rgba(220,128,155,0.26);color:#5a4a52">2</div><div class="hm-cell " style="background:rgba(220,128,155,0.54);color:#fff">5</div><div class="hm-cell " style="background:rgba(220,128,155,0.36);color:#5a4a52">3</div><div class="hm-row-label">8 p</div><div class="hm-cell " style="background:rgba(220,128,155,0.45);color:#5a4a52">4</div><div class="hm-cell " style="background:rgba(220,128,155,0.17);color:#5a4a52">1</div><div class="hm-cell " style="background:rgba(220,128,155,0.45);color:#5a4a52">4</div><div class="hm-cell " style="background:rgba(220,128,155,0.72);color:#fff">7</div><div class="hm-cell " style="background:rgba(220,128,155,0.26);color:#5a4a52">2</div><div class="hm-cell " style="background:rgba(220,128,155,0.63);color:#fff">6</div><div class="hm-cell " style="background:rgba(220,128,155,1.00);color:#fff">10</div></div>
+      <div class="hm-legend">Menos<div class="hm-legend-scale">
+        <span style="background:rgba(220,128,155,.10)"></span><span style="background:rgba(220,128,155,.30)"></span>
+        <span style="background:rgba(220,128,155,.55)"></span><span style="background:rgba(220,128,155,.80)"></span>
+        <span style="background:rgba(220,128,155,1)"></span></div>Más respuestas</div>
+  </div>
+    <div class="analytics-two-col">
+      <div class="panel"><div class="panel-head"><div>
+      <h3>🍩 Distribución por departamento</h3><p>Proporción por nivel de satisfacción</p>
+    </div></div>
+    <div class="donuts-grid"><div class="donut-item">
+    <div class="donut-title"><span style="color:var(--teal-deep)">●</span> 👶 Pediatría</div>
+    <div class="donut-svg">
+      <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#f4ecef" stroke-width="14"></circle>
+        <circle class="seg" cx="50" cy="50" r="42" fill="none" stroke="#2f8f5f" stroke-width="14" stroke-dasharray="197.92 263.89" stroke-dashoffset="0.00"></circle><circle class="seg" cx="50" cy="50" r="42" fill="none" stroke="#d8a23a" stroke-width="14" stroke-dasharray="52.78 263.89" stroke-dashoffset="-197.92"></circle><circle class="seg" cx="50" cy="50" r="42" fill="none" stroke="#c44a3f" stroke-width="14" stroke-dasharray="13.19 263.89" stroke-dashoffset="-250.70"></circle></svg>
+      <div class="donut-center"><div class="num">142</div><small>respuestas</small></div>
+    </div>
+    <div class="donut-legend"><span class="l-good">75%</span><span class="l-mid">20%</span><span class="l-bad">5%</span></div>
+  </div><div class="donut-item">
+    <div class="donut-title"><span style="color:var(--rose-deep)">●</span> 🤱 Ginecología</div>
+    <div class="donut-svg">
+      <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#f4ecef" stroke-width="14"></circle>
+        <circle class="seg" cx="50" cy="50" r="42" fill="none" stroke="#2f8f5f" stroke-width="14" stroke-dasharray="213.75 263.89" stroke-dashoffset="0.00"></circle><circle class="seg" cx="50" cy="50" r="42" fill="none" stroke="#d8a23a" stroke-width="14" stroke-dasharray="42.22 263.89" stroke-dashoffset="-213.75"></circle><circle class="seg" cx="50" cy="50" r="42" fill="none" stroke="#c44a3f" stroke-width="14" stroke-dasharray="7.92 263.89" stroke-dashoffset="-255.97"></circle></svg>
+      <div class="donut-center"><div class="num">108</div><small>respuestas</small></div>
+    </div>
+    <div class="donut-legend"><span class="l-good">81%</span><span class="l-mid">16%</span><span class="l-bad">3%</span></div>
+  </div></div>
+  </div>
+      <div class="panel"><div class="panel-head"><div>
+      <h3>🕐 Satisfacción por hora del día</h3><p>Promedio de satisfacción según hora de respuesta</p>
+    </div></div>
+    <div class="tod-chart"><div class="tod-bar peak ">
+      <div class="tod-bar-wrap"><div class="tod-bar-fill" data-h="85" style="height: 85%;"></div></div>
+      <div class="tod-bar-label">8 a</div></div><div class="tod-bar  ">
+      <div class="tod-bar-wrap"><div class="tod-bar-fill" data-h="82" style="height: 82%;"></div></div>
+      <div class="tod-bar-label">10 a</div></div><div class="tod-bar  ">
+      <div class="tod-bar-wrap"><div class="tod-bar-fill" data-h="78" style="height: 78%;"></div></div>
+      <div class="tod-bar-label">12 p</div></div><div class="tod-bar  ">
+      <div class="tod-bar-wrap"><div class="tod-bar-fill" data-h="75" style="height: 75%;"></div></div>
+      <div class="tod-bar-label">2 p</div></div><div class="tod-bar  dip">
+      <div class="tod-bar-wrap"><div class="tod-bar-fill" data-h="70" style="height: 70%;"></div></div>
+      <div class="tod-bar-label">4 p</div></div><div class="tod-bar  ">
+      <div class="tod-bar-wrap"><div class="tod-bar-fill" data-h="74" style="height: 74%;"></div></div>
+      <div class="tod-bar-label">6 p</div></div><div class="tod-bar  ">
+      <div class="tod-bar-wrap"><div class="tod-bar-fill" data-h="79" style="height: 79%;"></div></div>
+      <div class="tod-bar-label">8 p</div></div></div>
+      <div class="tod-annotation"><span class="star">⭐</span>
+        Mejor horario: <strong>8 a (85%)</strong>. Más bajo: <strong>4 p (70%)</strong>.</div>
+  </div>
+    </div>
+    <div class="insights-grid"><div class="insight-card peak"><div class="ic-icon">⭐</div>
+      <div class="ic-headline">Pico de actividad</div>
+      <div class="ic-detail"><strong>Lunes ~8:00</strong> concentra el mayor volumen de respuestas.</div>
+      <span class="ic-tag">Auto-detectado</span></div><div class="insight-card trend"><div class="ic-icon">📈</div>
+      <div class="ic-headline">Tendencia positiva</div>
+      <div class="ic-detail">Satisfacción general subió <strong>3 pts</strong> vs. el periodo anterior.</div>
+      <span class="ic-tag">Vs. periodo anterior</span></div><div class="insight-card target"><div class="ic-icon">🎯</div>
+      <div class="ic-headline">Pregunta crítica</div>
+      <div class="ic-detail"><strong>¿Cómo califica la comodidad de las instalaciones?</strong> (Pediatria) es la peor evaluada: 65% satisfecho.</div>
+      <span class="ic-tag">Acción sugerida</span></div><div class="insight-card alert"><div class="ic-icon">⚠️</div>
+      <div class="ic-headline">Patrón a revisar</div>
+      <div class="ic-detail">Las respuestas vespertinas (4-6 p) tienen <strong>12 pts menos</strong> de satisfacción que las matutinas.</div>
+      <span class="ic-tag">Requiere atención</span></div></div>
+    <div class="dash-main">
+      <div class="panel"><div class="panel-head"><div>
+      <h3>Desglose por pregunta</h3><p>Ambos departamentos · % satisfecho (😃) por pregunta</p>
+    </div></div>
+    
+    <div style="margin-bottom:24px">
+      <div class="qsection-label ped">
+        <span class="icon">👶</span> Pediatria</div>
+      <div class="qbar">
+    <div class="qbar-head"><div class="qbar-text">¿Considera que el motivo de atención de su paciente fue atendido adecuadamente?</div>
+      <div class="qbar-score good">78%</div></div>
+    <div class="qbar-track">
+      <div class="qbar-seg good" data-w="78" style="width: 78%;"></div><div class="qbar-seg mid" data-w="17" style="width: 17%;"></div><div class="qbar-seg bad" data-w="5" style="width: 5%;"></div>
+    </div>
+    <div class="qbar-legend"><span class="lg-good">111 satisfecho</span>
+      <span class="lg-mid">24 neutral</span>
+      <span class="lg-bad">7 insatisfecho</span></div>
+  </div><div class="qbar">
+    <div class="qbar-head"><div class="qbar-text">¿El personal médico resolvió sus dudas de manera clara?</div>
+      <div class="qbar-score mid">73%</div></div>
+    <div class="qbar-track">
+      <div class="qbar-seg good" data-w="73" style="width: 73%;"></div><div class="qbar-seg mid" data-w="22" style="width: 22%;"></div><div class="qbar-seg bad" data-w="5" style="width: 5%;"></div>
+    </div>
+    <div class="qbar-legend"><span class="lg-good">104 satisfecho</span>
+      <span class="lg-mid">31 neutral</span>
+      <span class="lg-bad">7 insatisfecho</span></div>
+  </div><div class="qbar">
+    <div class="qbar-head"><div class="qbar-text">¿La atención y calidez del equipo de enfermería fue el adecuado?</div>
+      <div class="qbar-score good">81%</div></div>
+    <div class="qbar-track">
+      <div class="qbar-seg good" data-w="81" style="width: 81%;"></div><div class="qbar-seg mid" data-w="14" style="width: 14%;"></div><div class="qbar-seg bad" data-w="5" style="width: 5%;"></div>
+    </div>
+    <div class="qbar-legend"><span class="lg-good">115 satisfecho</span>
+      <span class="lg-mid">20 neutral</span>
+      <span class="lg-bad">7 insatisfecho</span></div>
+  </div><div class="qbar">
+    <div class="qbar-head"><div class="qbar-text">¿Cómo califica la comodidad de las instalaciones?</div>
+      <div class="qbar-score mid">65%</div></div>
+    <div class="qbar-track">
+      <div class="qbar-seg good" data-w="65" style="width: 65%;"></div><div class="qbar-seg mid" data-w="28" style="width: 28%;"></div><div class="qbar-seg bad" data-w="7" style="width: 7%;"></div>
+    </div>
+    <div class="qbar-legend"><span class="lg-good">92 satisfecho</span>
+      <span class="lg-mid">40 neutral</span>
+      <span class="lg-bad">10 insatisfecho</span></div>
+  </div>
+    </div>
+    <div style="margin-bottom:24px">
+      <div class="qsection-label gin">
+        <span class="icon">🤱</span> Ginecologia</div>
+      <div class="qbar">
+    <div class="qbar-head"><div class="qbar-text">¿Te sentiste acompañada y bien atendida durante tu estancia y recuperación?</div>
+      <div class="qbar-score good">84%</div></div>
+    <div class="qbar-track">
+      <div class="qbar-seg good" data-w="84" style="width: 84%;"></div><div class="qbar-seg mid" data-w="13" style="width: 13%;"></div><div class="qbar-seg bad" data-w="3" style="width: 3%;"></div>
+    </div>
+    <div class="qbar-legend"><span class="lg-good">91 satisfecho</span>
+      <span class="lg-mid">14 neutral</span>
+      <span class="lg-bad">3 insatisfecho</span></div>
+  </div><div class="qbar">
+    <div class="qbar-head"><div class="qbar-text">¿Cómo califica la comodidad de las instalaciones?</div>
+      <div class="qbar-score mid">71%</div></div>
+    <div class="qbar-track">
+      <div class="qbar-seg good" data-w="71" style="width: 71%;"></div><div class="qbar-seg mid" data-w="24" style="width: 24%;"></div><div class="qbar-seg bad" data-w="5" style="width: 5%;"></div>
+    </div>
+    <div class="qbar-legend"><span class="lg-good">77 satisfecho</span>
+      <span class="lg-mid">26 neutral</span>
+      <span class="lg-bad">5 insatisfecho</span></div>
+  </div>
+    </div>
+  </div>
+      <div style="display:flex;flex-direction:column;gap:22px;">
+        <div class="panel"><div class="panel-head"><div><h3>Por departamento</h3><p>Resumen del periodo</p></div></div>
+    <div class="dept-block ped">
+    <div class="dept-head"><div class="dept-name"><span class="icon">👶</span> Pediatria</div>
+      <div class="dept-count">142 respuestas</div></div>
+    <div class="dept-score">75<small>%</small></div>
+    <div class="dept-meta"><span>😃 75%</span><span>😕 20%</span><span>☹️ 5%</span></div>
+  </div><div class="dept-block gin">
+    <div class="dept-head"><div class="dept-name"><span class="icon">🤱</span> Ginecologia</div>
+      <div class="dept-count">108 respuestas</div></div>
+    <div class="dept-score">81<small>%</small></div>
+    <div class="dept-meta"><span>😃 81%</span><span>😕 16%</span><span>☹️ 3%</span></div>
+  </div></div>
+        <div class="panel"><div class="panel-head"><div><h3>Tendencia · 14 días</h3><p>Encuestas completadas por día</p></div></div>
+    <div class="trend-chart"><svg class="trend-svg" viewBox="0 0 400 180" preserveAspectRatio="none">
+      <line x1="0" y1="45" x2="400" y2="45" stroke="#f0e6e9" stroke-dasharray="3,3"></line>
+      <line x1="0" y1="90" x2="400" y2="90" stroke="#f0e6e9" stroke-dasharray="3,3"></line>
+      <line x1="0" y1="135" x2="400" y2="135" stroke="#f0e6e9" stroke-dasharray="3,3"></line>
+      <path class="area-path" d="M 0.0,70.0 L 30.8,53.3 L 61.5,36.7 L 92.3,20.0 L 123.1,70.0 L 153.8,53.3 L 184.6,36.7 L 215.4,20.0 L 246.2,70.0 L 276.9,53.3 L 307.7,36.7 L 338.5,20.0 L 369.2,70.0 L 400.0,53.3 L 400,180 L 0,180 Z" fill="rgba(94,197,214,.15)"></path>
+      <path class="line-path" d="M 0.0,70.0 L 30.8,53.3 L 61.5,36.7 L 92.3,20.0 L 123.1,70.0 L 153.8,53.3 L 184.6,36.7 L 215.4,20.0 L 246.2,70.0 L 276.9,53.3 L 307.7,36.7 L 338.5,20.0 L 369.2,70.0 L 400.0,53.3" fill="none" stroke="#3bb4c8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path class="area-path" d="M 0.0,103.3 L 30.8,86.7 L 61.5,70.0 L 92.3,103.3 L 123.1,86.7 L 153.8,70.0 L 184.6,103.3 L 215.4,86.7 L 246.2,70.0 L 276.9,103.3 L 307.7,86.7 L 338.5,70.0 L 369.2,103.3 L 400.0,86.7 L 400,180 L 0,180 Z" fill="rgba(232,155,176,.13)"></path>
+      <path class="line-path" d="M 0.0,103.3 L 30.8,86.7 L 61.5,70.0 L 92.3,103.3 L 123.1,86.7 L 153.8,70.0 L 184.6,103.3 L 215.4,86.7 L 246.2,70.0 L 276.9,103.3 L 307.7,86.7 L 338.5,70.0 L 369.2,103.3 L 400.0,86.7" fill="none" stroke="#d97a96" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg></div>
+    <div class="trend-legend"><span class="lg-ped">Pediatría</span><span class="lg-gin">Ginecología</span></div>
+  </div>
+        <div class="panel"><div class="panel-head"><div><h3>Últimas respuestas</h3><p>Stream anonimizado</p></div></div>
+    <div class="recent-list"><div class="recent-item"><span class="emoji">😃</span>
+      <span class="dept gin">Ginecologia</span>
+      <span class="score good">5/5 😃</span><span class="time">hace 12 min</span></div><div class="recent-item"><span class="emoji">😃</span>
+      <span class="dept ped">Pediatria</span>
+      <span class="score good">4/4 😃</span><span class="time">hace 28 min</span></div><div class="recent-item"><span class="emoji">😕</span>
+      <span class="dept ped">Pediatria</span>
+      <span class="score mid">3 😃 · 1 😕</span><span class="time">hace 47 min</span></div><div class="recent-item"><span class="emoji">😕</span>
+      <span class="dept gin">Ginecologia</span>
+      <span class="score mid">4 😃 · 1 😕</span><span class="time">hace 1 h</span></div><div class="recent-item"><span class="emoji">☹️</span>
+      <span class="dept ped">Pediatria</span>
+      <span class="score bad">2 😃 · 1 😕 · 1 ☹️</span><span class="time">hace 2 h</span></div></div>
+  </div>
+      </div>
+    </div></div>
+    </div>
+  </section>
+
+  <!-- ============ ADMINISTRACIÓN ============ -->
+  <section class="view page admin-wrap" id="view-admin">
+    <div class="admin-toolbar">
+      <div class="seg" id="admSeg">
+        <button class="active" data-adm="preguntas">Preguntas</button>
+        <button data-adm="dispositivos">Tablets</button>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary btn-sm" id="admNew">+ Nuevo</button>
+    </div>
+    <div id="admin"><div class="loading">Cargando…</div></div>
+  </section>
+</div>
+
+<div id="modalRoot"></div>
+<div id="toast" class="toast"></div>
+
+
+
+
+
+
+</body></html>

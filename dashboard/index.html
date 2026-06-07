@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Encuestas de Salida · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ====================== LOGIN ====================== -->
+<section id="login" class="hidden">
+  <form class="login-card" id="loginForm" autocomplete="on">
+    <div class="login-logo">ES</div>
+    <h1>Encuestas de Salida</h1>
+    <div class="sub">Patronato Hospital Materno Infantil de N.L.</div>
+    <div class="fld">
+      <label for="email">Correo</label>
+      <input type="email" id="email" required placeholder="direccion@patronato.org" />
+    </div>
+    <div class="fld">
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" required placeholder="••••••••" />
+    </div>
+    <button type="submit" class="btn btn-primary" id="loginBtn">Entrar</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</section>
+
+<!-- ====================== APP ====================== -->
+<div id="app" class="hidden">
+  <header class="topbar">
+    <div class="logo">ES</div>
+    <div class="ttl">Encuestas de Salida<small>Dirección · Trabajo Social</small></div>
+    <div class="tabs" id="tabs">
+      <button class="active" data-tab="dashboard">Dashboard</button>
+      <button data-tab="admin">Administración</button>
+    </div>
+    <div class="spacer"></div>
+    <span class="user-chip" id="userChip"></span>
+    <button class="btn btn-ghost btn-sm" id="logoutBtn">Salir</button>
+  </header>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="view active page" id="view-dashboard">
+    <div class="dash-grid">
+      <div class="dash-filters">
+        <div class="filter-group">
+          <span class="filter-label">Periodo</span>
+          <button class="filter-pill" data-range="hoy">Hoy</button>
+          <button class="filter-pill" data-range="semana">Semana</button>
+          <button class="filter-pill active" data-range="30">Últimos 30 días</button>
+          <button class="filter-pill" data-range="anterior">Mes anterior</button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Depto.</span>
+          <button class="filter-pill active" data-depto="">Ambos</button>
+          <button class="filter-pill" data-depto="pediatria">👶 Pediatría</button>
+          <button class="filter-pill" data-depto="ginecologia">🤱 Ginecología</button>
+        </div>
+        <div class="live-dot" id="liveDot">
+          <span class="live-dot-orb"></span>
+          <span id="liveTxt">Cargando…</span>
+        </div>
+      </div>
+      <div id="dash"><div class="loading">Cargando datos…</div></div>
+    </div>
+  </section>
+
+  <!-- ============ ADMINISTRACIÓN ============ -->
+  <section class="view page admin-wrap" id="view-admin">
+    <div class="admin-toolbar">
+      <div class="seg" id="admSeg">
+        <button class="active" data-adm="preguntas">Preguntas</button>
+        <button data-adm="dispositivos">Tablets</button>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary btn-sm" id="admNew">+ Nuevo</button>
+    </div>
+    <div id="admin"><div class="loading">Cargando…</div></div>
+  </section>
+</div>
+
+<div id="modalRoot"></div>
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
