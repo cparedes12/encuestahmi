@@ -34,3 +34,4 @@ Thumbs.db
 
 # ===== APKs locales (se publican vía Releases, no en el repo) =====
 *.apk
+ks_base64.txt

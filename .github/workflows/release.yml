@@ -1,0 +1,68 @@
+name: Build & Release APK
+
+# Se dispara al publicar un tag de versión, ej:  git tag v1.0.1 && git push --tags
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: {} # permite lanzarlo manualmente desde la pestaña Actions
+
+permissions:
+  contents: write # necesario para crear el Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.3'
+          channel: stable
+          cache: true
+
+      - name: Dependencias
+        run: flutter pub get
+
+      - name: Restaurar keystore de firma
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=upload-keystore.jks
+          EOF
+
+      - name: Compilar APK release
+        run: |
+          flutter build apk --release \
+            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
+            --dart-define=ADMIN_PIN=${{ secrets.ADMIN_PIN }}
+
+      - name: Renombrar APK
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk \
+             "dist/encuesta-salida-${{ github.ref_name }}.apk"
+
+      - name: Publicar Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/dist/encuesta-salida-${{ github.ref_name }}.apk
+          generate_release_notes: true
+          name: Encuesta de Salida ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
