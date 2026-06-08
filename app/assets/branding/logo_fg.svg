@@ -1,0 +1,27 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fg" x1="330" y1="232" x2="694" y2="794" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3BB4C8"/>
+      <stop offset="1" stop-color="#E89BB0"/>
+    </linearGradient>
+  </defs>
+  <!-- Ícono adaptativo: figura centrada al ~58% con margen seguro, fondo transparente -->
+  <g transform="translate(512,512) scale(0.62) translate(-512,-512)">
+    <g stroke="url(#fg)" stroke-width="34" stroke-linecap="round">
+      <line x1="512" y1="150" x2="512" y2="212"/>
+      <line x1="790" y1="262" x2="746" y2="306"/>
+      <line x1="234" y1="262" x2="278" y2="306"/>
+      <line x1="858" y1="500" x2="796" y2="500"/>
+      <line x1="166" y1="500" x2="228" y2="500"/>
+    </g>
+    <path d="M512 232 C404 232 330 318 330 412 C330 486 376 532 408 576 L408 648 L616 648 L616 576 C648 532 694 486 694 412 C694 318 620 232 512 232 Z"
+          fill="none" stroke="url(#fg)" stroke-width="40" stroke-linejoin="round"/>
+    <path d="M512 590 C512 590 432 540 432 480 C432 448 458 426 486 426 C502 426 512 436 512 436 C512 436 522 426 538 426 C566 426 592 448 592 480 C592 540 512 590 512 590 Z"
+          fill="#E8607F"/>
+    <g fill="url(#fg)">
+      <rect x="430" y="664" width="164" height="34" rx="17"/>
+      <rect x="448" y="712" width="128" height="34" rx="17"/>
+      <rect x="474" y="760" width="76" height="34" rx="17"/>
+    </g>
+  </g>
+</svg>

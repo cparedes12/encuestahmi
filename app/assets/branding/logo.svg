@@ -1,0 +1,52 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5EC5D6"/>
+      <stop offset="0.5" stop-color="#3BB4C8"/>
+      <stop offset="1" stop-color="#E89BB0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.55">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Fondo redondeado (estilo ícono app) -->
+  <rect x="0" y="0" width="1024" height="1024" rx="230" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1024" height="1024" rx="230" fill="url(#glow)"/>
+
+  <!-- Rayos de "idea" -->
+  <g stroke="#ffffff" stroke-width="34" stroke-linecap="round" opacity="0.92">
+    <line x1="512" y1="150" x2="512" y2="212"/>
+    <line x1="790" y1="262" x2="746" y2="306"/>
+    <line x1="234" y1="262" x2="278" y2="306"/>
+    <line x1="858" y1="500" x2="796" y2="500"/>
+    <line x1="166" y1="500" x2="228" y2="500"/>
+  </g>
+
+  <!-- Foco (bombilla) -->
+  <path d="M512 232
+           C404 232 330 318 330 412
+           C330 486 376 532 408 576
+           L408 648 L616 648 L616 576
+           C648 532 694 486 694 412
+           C694 318 620 232 512 232 Z"
+        fill="#ffffff"/>
+
+  <!-- Corazón dentro del foco (cuidado + calidez) -->
+  <path d="M512 590
+           C512 590 432 540 432 480
+           C432 448 458 426 486 426
+           C502 426 512 436 512 436
+           C512 436 522 426 538 426
+           C566 426 592 448 592 480
+           C592 540 512 590 512 590 Z"
+        fill="#E8607F"/>
+
+  <!-- Base / rosca del foco -->
+  <g fill="#ffffff">
+    <rect x="430" y="664" width="164" height="34" rx="17"/>
+    <rect x="448" y="712" width="128" height="34" rx="17"/>
+    <rect x="474" y="760" width="76" height="34" rx="17"/>
+  </g>
+</svg>

@@ -8,8 +8,8 @@
 // ============================================================================
 window.CONFIG = {
   // URL pública de tu API Supabase (a través del Cloudflare Tunnel)
-  SUPABASE_URL: "https://encuestas-api.tudominio.com",
+  SUPABASE_URL: "https://encuestas-api.vlx.com.mx",
 
   // anon / public key (JWT que empieza con eyJ...)
-  SUPABASE_ANON_KEY: "PEGA_AQUI_TU_ANON_KEY",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzgwODEyNzE1LCJleHAiOjIwOTYxNzI3MTV9.TETCzo3xwjmNmx3E8J4XKa42NvnndVu6DOe0KMFCLdU",
 };
