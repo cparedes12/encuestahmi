@@ -129,6 +129,7 @@ class _SurveyFlowState extends State<SurveyFlow> {
     ));
     if (step == preguntas.length && _sesion != null) {
       _sesion!.completadaEn = DateTime.now();
+      _sesion!.evaluarCalidad(preguntas.length); // anti-trampa
       _repo.guardarEncuesta(_sesion!).then((folio) {
         if (mounted) setState(() => _folio = folio);
       });

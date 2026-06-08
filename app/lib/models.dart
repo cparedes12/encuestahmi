@@ -114,6 +114,8 @@ class EncuestaSesion {
   final Departamento departamento;
   final DateTime iniciadaEn;
   DateTime? completadaEn;
+  bool sospechosa = false; // anti-trampa: respuesta de baja calidad
+  int? duracionSeg; // duración total de la encuesta
   final List<RespuestaLocal> respuestas = [];
 
   EncuestaSesion({
@@ -122,11 +124,25 @@ class EncuestaSesion {
     required this.iniciadaEn,
   });
 
+  /// Evalúa señales de "trampa"/baja calidad al completar:
+  /// demasiado rápida, o todas iguales contestadas muy rápido.
+  void evaluarCalidad(int totalPreguntas) {
+    completadaEn ??= DateTime.now();
+    final dur = completadaEn!.difference(iniciadaEn).inSeconds;
+    duracionSeg = dur;
+    final todasIguales =
+        respuestas.map((r) => r.valor).toSet().length == 1 && respuestas.length > 1;
+    sospechosa = dur < (totalPreguntas * 1.5).ceil() ||
+        (todasIguales && dur < totalPreguntas * 2.5);
+  }
+
   Map<String, dynamic> toMap() => {
         'id': id,
         'departamento': departamento.key,
         'iniciada_en': iniciadaEn.toUtc().toIso8601String(),
         'completada_en': completadaEn?.toUtc().toIso8601String(),
+        'sospechosa': sospechosa,
+        'duracion_seg': duracionSeg,
         'respuestas': respuestas.map((r) => r.toMap()).toList(),
       };
 
@@ -139,6 +155,8 @@ class EncuestaSesion {
     if (m['completada_en'] != null) {
       s.completadaEn = DateTime.parse(m['completada_en'] as String);
     }
+    s.sospechosa = (m['sospechosa'] as bool?) ?? false;
+    s.duracionSeg = m['duracion_seg'] as int?;
     for (final r in (m['respuestas'] as List)) {
       s.respuestas.add(RespuestaLocal.fromMap(Map<String, dynamic>.from(r)));
     }

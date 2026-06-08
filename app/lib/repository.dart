@@ -122,6 +122,8 @@ class EncuestaRepository {
           'iniciada_en': s.iniciadaEn.toUtc().toIso8601String(),
           'completada_en': s.completadaEn?.toUtc().toIso8601String(),
           'completada': s.completadaEn != null,
+          'sospechosa': s.sospechosa,
+          'duracion_seg': s.duracionSeg,
           'app_version': Config.appVersion,
         }));
 
