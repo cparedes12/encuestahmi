@@ -5,7 +5,7 @@
 "use strict";
 
 let sb = null;
-const state = { range: "30", depto: "", tab: "dashboard", admTab: "preguntas" };
+const state = { range: "30", depto: "", tab: "dashboard", admTab: "preguntas", isAdmin: false };
 
 const $  = (s, el=document) => el.querySelector(s);
 const $$ = (s, el=document) => [...el.querySelectorAll(s)];
@@ -54,15 +54,25 @@ async function checkSession(){
   else showLogin();
 }
 function showLogin(){ $("#login").classList.remove("hidden"); $("#app").classList.add("hidden"); }
-function enterApp(session){
+async function enterApp(session){
   $("#login").classList.add("hidden");
   $("#app").classList.remove("hidden");
-  $("#userChip").textContent = session.user.email || "";
+  // Rol: 'admin' ve Administración; 'lectura' solo estadísticas.
+  try {
+    const { data: perfil } = await sb.from("perfil")
+      .select("rol").eq("id", session.user.id).maybeSingle();
+    state.isAdmin = perfil?.rol === "admin";
+  } catch (_) { state.isAdmin = false; }
+  $("#userChip").textContent =
+    (session.user.email || "") + (state.isAdmin ? " · Admin" : " · Lectura");
+  const admBtn = document.querySelector('#tabs button[data-tab="admin"]');
+  if (admBtn) admBtn.style.display = state.isAdmin ? "" : "none";
   switchTab("dashboard");
 }
 
 /* ---------------------------------------------------------------- tabs */
 function switchTab(tab){
+  if (tab === "admin" && !state.isAdmin) tab = "dashboard"; // lectura no entra a admin
   state.tab = tab;
   $$("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
   $("#view-dashboard").classList.toggle("active", tab === "dashboard");
