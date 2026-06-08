@@ -11,6 +11,7 @@ import 'models.dart';
 import 'config.dart';
 import 'repository.dart';
 import 'update_service.dart';
+import 'voice_service.dart';
 import 'widgets.dart';
 
 const _uuid = Uuid();
@@ -75,7 +76,19 @@ class _SurveyFlowState extends State<SurveyFlow> {
     final d = await _repo.departamentoActual();
     if (mounted) setState(() => depto = d);
     await _cargarPreguntas();
+    _hablar(); // bienvenida hablada al iniciar
     _chequeoActualizacionSilencioso();
+  }
+
+  /// Reproduce la voz de la pantalla actual (clip neuronal o TTS de respaldo).
+  void _hablar() {
+    if (step == 0) {
+      VoiceService.instance.bienvenida(depto);
+    } else if (step <= preguntas.length) {
+      VoiceService.instance.pregunta(depto, preguntas[step - 1].texto);
+    } else {
+      VoiceService.instance.gracias(depto);
+    }
   }
 
   /// Al iniciar: si hay versión nueva, descarga e instala (silencioso con Knox).
@@ -93,15 +106,18 @@ class _SurveyFlowState extends State<SurveyFlow> {
     if (mounted) setState(() => preguntas = ps);
   }
 
-  void _start() => setState(() {
-        _folio = null;
-        _sesion = EncuestaSesion(
-          id: _uuid.v4(),
-          departamento: depto,
-          iniciadaEn: DateTime.now(),
-        );
-        step = 1;
-      });
+  void _start() {
+    setState(() {
+      _folio = null;
+      _sesion = EncuestaSesion(
+        id: _uuid.v4(),
+        departamento: depto,
+        iniciadaEn: DateTime.now(),
+      );
+      step = 1;
+    });
+    _hablar();
+  }
 
   void _answer(Valor v) {
     final p = preguntas[step - 1];
@@ -118,12 +134,16 @@ class _SurveyFlowState extends State<SurveyFlow> {
       });
     }
     setState(() => step++);
+    _hablar();
   }
 
-  void _reset() => setState(() {
-        _sesion = null;
-        step = 0;
-      });
+  void _reset() {
+    setState(() {
+      _sesion = null;
+      step = 0;
+    });
+    _hablar();
+  }
 
   // ----- Admin: cambiar de encuesta (protegido por PIN) -----
   Future<void> _abrirAdmin() async {
@@ -149,6 +169,7 @@ class _SurveyFlowState extends State<SurveyFlow> {
         step = 0;
       });
       _cargarPreguntas();
+      _hablar();
     }
   }
 
@@ -185,7 +206,7 @@ class _SurveyFlowState extends State<SurveyFlow> {
         child: SafeArea(
           child: Column(
             children: [
-              _TopBar(depto: depto, onAdmin: _abrirAdmin),
+              _TopBar(depto: depto, onAdmin: _abrirAdmin, onRepeat: _hablar),
               Expanded(
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 500),
@@ -222,7 +243,9 @@ class _SurveyFlowState extends State<SurveyFlow> {
 class _TopBar extends StatelessWidget {
   final Departamento depto;
   final VoidCallback onAdmin;
-  const _TopBar({required this.depto, required this.onAdmin});
+  final VoidCallback onRepeat;
+  const _TopBar(
+      {required this.depto, required this.onAdmin, required this.onRepeat});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -244,6 +267,12 @@ class _TopBar extends StatelessWidget {
                   style: display(15, weight: FontWeight.w700)),
             ),
           ),
+          IconButton(
+            onPressed: onRepeat,
+            tooltip: 'Escuchar de nuevo',
+            icon: Icon(Icons.volume_up_rounded, color: depto.theme.accentDeep),
+          ),
+          const SizedBox(width: 4),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
             decoration: BoxDecoration(
