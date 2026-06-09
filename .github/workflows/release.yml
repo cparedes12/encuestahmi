@@ -5,7 +5,11 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch: {} # permite lanzarlo manualmente desde la pestaña Actions
+  workflow_dispatch:        # lanzar manualmente desde la pestaña Actions
+    inputs:
+      version:
+        description: 'Versión a publicar (ej. 1.0.2)'
+        required: true
 
 permissions:
   contents: write # necesario para crear el Release
@@ -59,7 +63,8 @@ jobs:
           SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
           set -e
-          VER="${GITHUB_REF_NAME#v}"                       # v1.0.2 -> 1.0.2
+          VER="${{ github.event.inputs.version }}"          # si fue manual
+          if [ -z "$VER" ]; then VER="${GITHUB_REF_NAME#v}"; fi  # si fue por tag (v1.0.2 -> 1.0.2)
           FILE="encuesta-salida-${VER}.apk"
           APK="build/app/outputs/flutter-apk/app-arm64-v8a-release.apk"
           echo "Subiendo $FILE ($(du -h "$APK" | cut -f1)) a bucket app-releases..."
