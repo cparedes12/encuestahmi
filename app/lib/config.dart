@@ -24,6 +24,12 @@ class Config {
   static const adminPin =
       String.fromEnvironment('ADMIN_PIN', defaultValue: '2468');
 
+  /// Detección de presencia (cámara frontal + ML Kit) para iniciar la voz al
+  /// acercarse alguien. Opt-in por dispositivo: --dart-define=PRESENCIA=1
+  /// No guarda imágenes; solo detecta si hay un rostro.
+  static const presenciaActiva =
+      bool.fromEnvironment('PRESENCIA', defaultValue: false);
+
   static const appVersion = '1.0.0';
 
   static bool get supabaseConfigured =>

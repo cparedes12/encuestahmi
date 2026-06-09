@@ -9,6 +9,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'theme.dart';
 import 'models.dart';
 import 'config.dart';
+import 'presence_service.dart';
 import 'repository.dart';
 import 'update_service.dart';
 import 'voice_service.dart';
@@ -69,6 +70,17 @@ class _SurveyFlowState extends State<SurveyFlow> {
     super.initState();
     preguntas = seedPreguntas(depto);
     _inicializar();
+    // Presencia (opcional): al acercarse alguien en la bienvenida, habla.
+    PresenceService.instance.iniciar(onPresencia: () {
+      if (mounted && step == 0) _hablar();
+    });
+  }
+
+  @override
+  void dispose() {
+    PresenceService.instance.detener();
+    VoiceService.instance.detener();
+    super.dispose();
   }
 
   Future<void> _inicializar() async {
