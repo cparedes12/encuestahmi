@@ -46,9 +46,9 @@ jobs:
           storeFile=upload-keystore.jks
           EOF
 
-      - name: Compilar APK release
+      - name: Compilar APK release (arm64, más liviano para subir por el túnel)
         run: |
-          flutter build apk --release \
+          flutter build apk --release --split-per-abi --target-platform android-arm64 \
             --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
             --dart-define=ADMIN_PIN=${{ secrets.ADMIN_PIN }}
@@ -59,23 +59,26 @@ jobs:
           SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
           set -e
-          VER="${GITHUB_REF_NAME#v}"                       # v1.0.1 -> 1.0.1
+          VER="${GITHUB_REF_NAME#v}"                       # v1.0.2 -> 1.0.2
           FILE="encuesta-salida-${VER}.apk"
-          APK="build/app/outputs/flutter-apk/app-release.apk"
-          echo "Subiendo $FILE a bucket app-releases..."
-          curl -sS -f -X POST \
-            "${SUPABASE_URL}/storage/v1/object/app-releases/${FILE}" \
+          APK="build/app/outputs/flutter-apk/app-arm64-v8a-release.apk"
+          echo "Subiendo $FILE ($(du -h "$APK" | cut -f1)) a bucket app-releases..."
+          # Reintentos + tiempos amplios para evitar cortes 524 del túnel Cloudflare.
+          curl -sS -f --http1.1 \
+            --connect-timeout 30 --max-time 600 \
+            --retry 4 --retry-delay 10 --retry-all-errors \
+            -X POST "${SUPABASE_URL}/storage/v1/object/app-releases/${FILE}" \
             -H "Authorization: Bearer ${SERVICE_KEY}" \
             -H "apikey: ${SERVICE_KEY}" \
             -H "x-upsert: true" \
             -H "Content-Type: application/vnd.android.package-archive" \
             --data-binary "@${APK}"
           echo "Registrando versión ${VER} en app_release..."
-          curl -sS -f -X POST \
+          curl -sS -f --retry 3 --retry-all-errors -X POST \
             "${SUPABASE_URL}/rest/v1/app_release" \
             -H "Authorization: Bearer ${SERVICE_KEY}" \
             -H "apikey: ${SERVICE_KEY}" \
             -H "Content-Type: application/json" \
             -H "Prefer: return=minimal" \
             -d "{\"version\":\"${VER}\",\"storage_path\":\"${FILE}\",\"notas\":\"Release ${GITHUB_REF_NAME}\",\"activo\":true}"
-          echo "✅ Publicado ${FILE}"
+          echo "Publicado ${FILE}"
