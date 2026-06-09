@@ -502,6 +502,8 @@ function applyAnims(){
 
 /* ================================================================ ADMIN */
 async function loadAdmin(){
+  const isVer = state.admTab === "versiones";
+  $("#admNew").style.display = isVer ? "none" : "";
   $("#admNew").textContent = state.admTab === "preguntas" ? "+ Nueva pregunta" : "+ Nueva tablet";
   const host = $("#admin");
   host.innerHTML = `<div class="loading">Cargando…</div>`;
@@ -510,14 +512,18 @@ async function loadAdmin(){
       const { data, error } = await sb.from("preguntas").select("*").order("departamento").order("orden");
       if (error) throw error;
       renderPreguntas(data || []);
-    } else {
+    } else if (state.admTab === "dispositivos"){
       const { data, error } = await sb.from("dispositivos").select("*").order("departamento").order("nombre");
       if (error) throw error;
       renderDispositivos(data || []);
+    } else {
+      const { data, error } = await sb.from("app_release").select("*").order("publicado_en", { ascending: false });
+      if (error) throw error;
+      renderVersiones(data || []);
     }
   }catch(e){
     host.innerHTML = `<div class="banner">No se pudo cargar: ${esc(e.message||e)}.
-      ¿Aplicaste <b>dashboard_admin.sql</b>?</div>`;
+      ¿Aplicaste <b>dashboard_admin.sql</b> / <b>dashboard_releases.sql</b>?</div>`;
   }
 }
 
@@ -540,6 +546,73 @@ function renderPreguntas(rows){
   $$("#admin [data-edit]").forEach(b => b.onclick = () => editPregunta(rows.find(p=>p.id===b.dataset.edit)));
   $$("#admin [data-toggle]").forEach(b => b.onclick = () => togglePregunta(rows.find(p=>p.id===b.dataset.toggle)));
   $$("#admin [data-del]").forEach(b => b.onclick = () => delPregunta(rows.find(p=>p.id===b.dataset.del)));
+}
+
+/* ---- versiones del APK (OTA) ---- */
+function renderVersiones(rows){
+  const tr = v => `<tr>
+    <td><b>${esc(v.version)}</b></td>
+    <td style="font-family:monospace;font-size:12px">${esc(v.storage_path)}</td>
+    <td>${esc(v.notas||"—")}</td>
+    <td><span class="pill-state ${v.activo?"pill-on":"pill-off"}">${v.activo?"Activa":"Inactiva"}</span></td>
+    <td>${v.publicado_en?rel(v.publicado_en):"—"}</td>
+    <td><div class="row-actions">
+      <button class="btn btn-ghost btn-sm" data-act="${v.id}">${v.activo?"Desactivar":"Activar"}</button>
+    </div></td></tr>`;
+  $("#admin").innerHTML = `
+    <div class="panel" style="margin-bottom:16px"><div class="panel-head"><div>
+      <h3>Publicar nueva versión (APK)</h3>
+      <p>Sube el APK release; las tablets lo detectarán e instalarán por OTA</p></div></div>
+      <div class="fld"><label>Archivo APK</label><input type="file" id="apkFile" accept=".apk"/></div>
+      <div class="fld"><label>Versión</label><input type="text" id="apkVer" placeholder="1.0.1"/></div>
+      <div class="fld"><label>Notas (opcional)</label><input type="text" id="apkNotas" placeholder="Correcciones y mejoras"/></div>
+      <div id="apkProg" style="font-size:13px;color:#6a6a78;margin:8px 0;min-height:18px"></div>
+      <button class="btn btn-primary" id="apkUp">Publicar versión</button>
+    </div>
+    <div class="panel"><div class="panel-head"><div>
+      <h3>Versiones publicadas</h3><p>La "Activa" es la que descargan las tablets</p></div></div>
+    <table class="adm-table"><thead><tr><th>Versión</th><th>Archivo</th><th>Notas</th><th>Estado</th><th>Publicado</th><th></th></tr></thead>
+    <tbody>${rows.length?rows.map(tr).join(""):`<tr><td colspan="6" style="text-align:center;color:#9a9aa6;padding:24px">Sin versiones</td></tr>`}</tbody></table></div>`;
+  $("#apkUp").onclick = uploadRelease;
+  $$("#admin [data-act]").forEach(b => b.onclick = () => toggleVersion(rows.find(v => String(v.id) === b.dataset.act)));
+}
+
+async function uploadRelease(){
+  const file = $("#apkFile").files[0];
+  const ver  = $("#apkVer").value.trim();
+  const notas= $("#apkNotas").value.trim();
+  const prog = $("#apkProg");
+  if (!file){ prog.textContent = "Selecciona un archivo APK."; return; }
+  if (!ver){  prog.textContent = "Indica la versión (ej. 1.0.1)."; return; }
+  const path = `encuesta-salida-${ver}.apk`;
+  const btn = $("#apkUp"); btn.disabled = true; const t0 = btn.textContent; btn.textContent = "Subiendo…";
+  try{
+    prog.textContent = "Subiendo APK al bucket privado…";
+    const up = await sb.storage.from("app-releases")
+      .upload(path, file, { upsert:true, contentType:"application/vnd.android.package-archive" });
+    if (up.error) throw up.error;
+    prog.textContent = "Registrando versión…";
+    await sb.from("app_release").update({ activo:false }).eq("activo", true); // desactiva anteriores
+    const ins = await sb.from("app_release").insert({ version:ver, storage_path:path, notas:notas||null, activo:true });
+    if (ins.error) throw ins.error;
+    prog.textContent = "✅ Publicada la versión " + ver;
+    toast("Versión " + ver + " publicada");
+    loadAdmin();
+  }catch(e){
+    prog.textContent = "Error: " + (e.message || e);
+  }finally{ btn.disabled = false; btn.textContent = t0; }
+}
+
+async function toggleVersion(v){
+  try{
+    if (!v.activo){
+      await sb.from("app_release").update({ activo:false }).eq("activo", true);
+      await sb.from("app_release").update({ activo:true }).eq("id", v.id);
+    } else {
+      await sb.from("app_release").update({ activo:false }).eq("id", v.id);
+    }
+    toast("Actualizado"); loadAdmin();
+  }catch(e){ toast("Error: " + (e.message||e)); }
 }
 
 function renderDispositivos(rows){
