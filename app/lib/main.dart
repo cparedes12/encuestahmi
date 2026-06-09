@@ -648,25 +648,31 @@ class ThanksScreen extends StatefulWidget {
 }
 
 class _ThanksScreenState extends State<ThanksScreen> {
-  int _n = 5;
-  Timer? _timer;
+  bool _disposed = false;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_n <= 1) {
-        _timer?.cancel();
-        widget.onReset();
-      } else {
-        setState(() => _n--);
-      }
-    });
+    _programarReinicio();
+  }
+
+  /// Reinicia al inicio SOLO después de que termine el mensaje de gracias
+  /// (+ margen), con un mínimo en pantalla para que se alcance a leer.
+  Future<void> _programarReinicio() async {
+    final inicio = DateTime.now();
+    await VoiceService.instance.esperarFin(); // espera a que termine la voz
+    await Future.delayed(const Duration(milliseconds: 2200)); // margen
+    const minimo = Duration(seconds: 6);
+    final transcurrido = DateTime.now().difference(inicio);
+    if (transcurrido < minimo) {
+      await Future.delayed(minimo - transcurrido);
+    }
+    if (!_disposed && mounted) widget.onReset();
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _disposed = true;
     super.dispose();
   }
 
@@ -716,7 +722,7 @@ class _ThanksScreenState extends State<ThanksScreen> {
                   const SizedBox(height: 18),
                   FadeInUp(
                     delay: const Duration(milliseconds: 760),
-                    child: Text('Regresando al inicio en $_n…',
+                    child: Text('Regresando al inicio…',
                         style: body(12,
                             weight: FontWeight.w700, color: Brand.inkMute)),
                   ),

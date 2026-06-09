@@ -54,6 +54,16 @@ class VoiceService {
   Future<void> gracias(Departamento d) => _decir(d.key, _ui[d.key]!['thanks']!);
   Future<void> pregunta(Departamento d, String texto) => _decir(d.key, texto);
 
+  /// Espera a que termine la reproducción actual (para no cortar el mensaje de
+  /// gracias). Si es TTS o no hay clip, cae al timeout como respaldo.
+  Future<void> esperarFin(
+      {Duration timeout = const Duration(seconds: 14)}) async {
+    if (!habilitada) return;
+    try {
+      await _player.onPlayerComplete.first.timeout(timeout);
+    } catch (_) {/* ya terminó, TTS, o timeout */}
+  }
+
   Future<void> detener() async {
     await _player.stop();
     try {
